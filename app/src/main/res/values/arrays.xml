@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ai_providers">
+        <item>OpenAI (ChatGPT)</item>
+        <item>讯飞星火</item>
+        <item>百度文心一言</item>
+        <item>智谱 ChatGLM</item>
+    </string-array>
+
+    <string-array name="ai_provider_values">
+        <item>openai</item>
+        <item>xunfei</item>
+        <item>baidu</item>
+        <item>chatglm</item>
+    </string-array>
+</resources>

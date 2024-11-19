@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="AI助手设置">
+
+        <SwitchPreferenceCompat
+            app:key="enable_ai"
+            app:iconSpaceReserved="false"
+            app:title="启用AI助手"
+            app:summary="开启后可以使用AI相关功能" />
+
+        <ListPreference
+            app:key="ai_provider"
+            app:iconSpaceReserved="false"
+            app:title="AI服务提供商"
+            app:summary="选择您想使用的AI服务"
+            app:entries="@array/ai_providers"
+            app:entryValues="@array/ai_provider_values"
+            app:defaultValue="openai" />
+
+        <EditTextPreference
+            app:key="api_key"
+            app:iconSpaceReserved="false"
+            app:title="API密钥"
+            app:summary="请输入您的API密钥"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="功能设置">
+
+        <SwitchPreferenceCompat
+            app:key="enable_ocr"
+            app:iconSpaceReserved="false"
+            app:title="启用OCR识别"
+            app:summary="开启后可以识别课表图片" />
+
+        <SwitchPreferenceCompat
+            app:key="enable_voice"
+            app:iconSpaceReserved="false"
+            app:title="启用语音助手"
+            app:summary="开启后可以使用语音指令" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

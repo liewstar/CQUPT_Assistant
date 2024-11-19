@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.CQUPT.ui.home.HomeFragment"
+        android:label="课表"
+        tools:layout="@layout/fragment_classes" />
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.CQUPT.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.CQUPT.ui.slideshow.SlideshowFragment"
+        android:label="导出课表"
+        tools:layout="@layout/fragment_load_classes" />
+
+    <fragment
+        android:id="@+id/nav_network"
+        android:name="com.example.CQUPT.ui.login.LoginFragment"
+        android:label="校园网登陆"
+        tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/nav_news"
+        android:name="com.example.CQUPT.ui.news.NewsFragment"
+        android:label="校园公告"
+        tools:layout="@layout/fragment_login">
+        <action
+        android:id="@+id/action_newsFragment_to_newsDetailFragment"
+        app:destination="@id/newsDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/newsDetailFragment"
+        android:name="com.example.CQUPT.ui.news.NewsDetailFragment"
+        android:label="新闻详情"
+        tools:layout="@layout/fragment_news_detail">
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="date"
+            app:argType="string" />
+        <argument
+            android:name="content"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.CQUPT.ui.settings.SettingsFragment"
+        android:label="设置"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.CQUPT.ui.about.AboutFragment"
+        android:label="关于作者"
+        tools:layout="@layout/fragment_about" />
+</navigation>
