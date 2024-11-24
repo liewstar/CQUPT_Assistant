@@ -18,6 +18,9 @@ import com.example.CQUPT.ui.HttpUtil;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -140,14 +143,25 @@ public class LoginFragment extends Fragment {
                 String result = response.body() != null ? response.body().string() : null;
                 requireActivity().runOnUiThread(() -> {
                     if (response.isSuccessful() && result != null) {
+                        showSuccess(result);
                         // 解析登录结果
-                        if (result.contains("success")) {
-                            showSuccess("登录成功");
-                            // TODO: 处理登录成功后的操作
-                        } else if (result.contains("error")) {
-                            showError("登录失败：" + parseErrorMessage(result));
-                        } else {
-                            showError("登录失败：未知错误");
+                        try {
+                            String _result = result;
+                            _result = _result.substring(7, _result.length() - 1);
+                            JSONObject json = new JSONObject(_result);
+                            String resultValue = json.getString("result");
+                            if(resultValue.equals("1")) {
+                                //登录成功
+                                showSuccess("登录成功");
+                            } else if(resultValue.equals("0")) {
+                                //账号已登陆
+                                showError("账号已登陆或未知错误");
+                            } else {
+                                //未知错误
+                                showError("登录失败：未知错误");
+                            }
+                        } catch (JSONException e) {
+                            showError("解析json错误");
                         }
                     } else {
                         showError("服务器响应错误");
@@ -179,15 +193,6 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    private String parseErrorMessage(String response) {
-        // TODO: 根据实际响应格式解析错误信息
-        if (response.contains("password_error")) {
-            return "用户名或密码错误";
-        } else if (response.contains("already_online")) {
-            return "该账号已在线";
-        }
-        return "未知错误";
-    }
 
     @Override
     public void onDestroyView() {
