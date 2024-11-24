@@ -56,6 +56,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_course_selection"
+        android:name="com.example.CQUPT.ui.course.CourseSelectionFragment"
+        android:label="抢课"
+        tools:layout="@layout/fragment_course_selection" />
+
+    <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.CQUPT.ui.settings.SettingsFragment"
         android:label="设置"
