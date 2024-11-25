@@ -35,10 +35,19 @@ jobs:
         with:
           arguments: assembleDebug
           
+      - name: Check APK location
+        run: |
+          echo "Checking build output directory..."
+          ls -R app/build/outputs/
+          
+      - name: Move APK
+        run: |
+          find app/build/outputs -name "*.apk" -exec cp {} ./CQUPT_Assistant_${{ steps.tag_version.outputs.new_tag }}.apk \;
+          
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
-          artifacts: "*.apk"
+          artifacts: "CQUPT_Assistant_*.apk"
           token: ${{ github.token }}
           generateReleaseNotes: true
