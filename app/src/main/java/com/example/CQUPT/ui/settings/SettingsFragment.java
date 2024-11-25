@@ -1,5 +1,6 @@
 package com.example.CQUPT.ui.settings;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,12 +15,15 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.example.CQUPT.R;
+import com.example.CQUPT.ui.login.LoginWebViewActivity;
 
 public class SettingsFragment extends Fragment {
 
     private TextView startPageValue;
+    private TextView sessionValue;
     private SharedPreferences sharedPreferences;
     private static final String PREF_START_PAGE = "start_page";
+    private static final String PREF_SESSION_ID = "session_id";
 
     @Nullable
     @Override
@@ -30,13 +34,17 @@ public class SettingsFragment extends Fragment {
         
         // 初始化视图
         startPageValue = view.findViewById(R.id.start_page_value);
+        sessionValue = view.findViewById(R.id.session_value);
         View startPageContainer = view.findViewById(R.id.start_page_container);
+        View sessionContainer = view.findViewById(R.id.session_container);
 
         // 设置当前值
         updateStartPageValue();
+        updateSessionValue();
 
         // 设置点击事件
         startPageContainer.setOnClickListener(v -> showStartPageDialog());
+        sessionContainer.setOnClickListener(v -> startLoginWebView());
 
         return view;
     }
@@ -44,6 +52,20 @@ public class SettingsFragment extends Fragment {
     private void updateStartPageValue() {
         String currentStartPage = sharedPreferences.getString(PREF_START_PAGE, "课程表");
         startPageValue.setText(currentStartPage);
+    }
+
+    private void updateSessionValue() {
+        String sessionId = sharedPreferences.getString(PREF_SESSION_ID, "未设置");
+        // 只显示session的前6位，其余用***代替
+        if (!"未设置".equals(sessionId) && sessionId.length() > 6) {
+            sessionId = sessionId.substring(0, 6) + "***";
+        }
+        sessionValue.setText(sessionId);
+    }
+
+    private void startLoginWebView() {
+        Intent intent = new Intent(requireContext(), LoginWebViewActivity.class);
+        startActivity(intent);
     }
 
     private void showStartPageDialog() {
