@@ -11,6 +11,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
       - name: Bump version and push tag
         id: tag_version
@@ -24,6 +26,12 @@ jobs:
       - name: Get current time
         id: current_time
         run: echo "time=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -55,7 +63,7 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           artifacts: "CQUPT_Assistant_*.apk"
           token: ${{ github.token }}
-          generateReleaseNotes: true
+          generateReleaseNotes: false
           name: "Release ${{ steps.tag_version.outputs.new_tag }}"
           body: |
             ## 🚀 新版本发布
@@ -65,4 +73,4 @@ jobs:
             - 构建时间: ${{ steps.current_time.outputs.time }}
             
             ### 📝 更新内容
-            ${{ steps.tag_version.outputs.changelog }}
+            ${{ steps.changelog.outputs.changelog }}
