@@ -21,6 +21,10 @@ jobs:
           DEFAULT_BUMP: patch
           VERBOSE: true
           
+      - name: Get current time
+        id: current_time
+        run: echo "time=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+          
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -52,3 +56,13 @@ jobs:
           artifacts: "CQUPT_Assistant_*.apk"
           token: ${{ github.token }}
           generateReleaseNotes: true
+          name: "Release ${{ steps.tag_version.outputs.new_tag }}"
+          body: |
+            ## 🚀 新版本发布
+            
+            ### 🔄 自动化发布
+            - 版本: ${{ steps.tag_version.outputs.new_tag }}
+            - 构建时间: ${{ steps.current_time.outputs.time }}
+            
+            ### 📝 更新内容
+            ${{ steps.tag_version.outputs.changelog }}
