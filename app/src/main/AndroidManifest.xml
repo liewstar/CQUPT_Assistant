@@ -38,6 +38,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.login.LoginWebViewActivity"
+            android:exported="false"
+            android:label="登录教务系统"
+            android:theme="@style/Theme.CQUPT_Assistant.NoActionBar" />
     </application>
 
 </manifest>

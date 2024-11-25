@@ -1,5 +1,6 @@
 package com.example.CQUPT.ui.course;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.CQUPT.adapter.CourseSuccessAdapter;
@@ -30,6 +32,7 @@ public class CourseSelectionFragment extends Fragment {
     private ScheduledExecutorService executor;
     private Handler mainHandler;
     private boolean isRunning = false;
+    private static final String PREF_SESSION_ID = "session_id";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,6 +48,11 @@ public class CourseSelectionFragment extends Fragment {
         adapter = new CourseSuccessAdapter();
         binding.successList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.successList.setAdapter(adapter);
+
+        // 从SharedPreferences获取Session并设置
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        String savedSession = prefs.getString(PREF_SESSION_ID, "");
+        binding.sessionInput.setText(savedSession);
 
         binding.startButton.setOnClickListener(v -> {
             if (!isRunning) {
@@ -69,11 +77,18 @@ public class CourseSelectionFragment extends Fragment {
     }
 
     private void startCourseSelection() {
-        String session = binding.sessionInput.getText().toString();
+        // 从SharedPreferences获取最新的Session
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        String session = prefs.getString(PREF_SESSION_ID, "");
         String courseNames = binding.courseNamesInput.getText().toString();
 
-        if (session.isEmpty() || courseNames.isEmpty()) {
-            Toast.makeText(requireContext(), "请填写Session和课程名称", Toast.LENGTH_SHORT).show();
+        if (session.isEmpty()) {
+            Toast.makeText(requireContext(), "请先在设置页面配置Session", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (courseNames.isEmpty()) {
+            Toast.makeText(requireContext(), "请填写课程名称", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -87,7 +102,7 @@ public class CourseSelectionFragment extends Fragment {
         binding.statusText.setText("正在抢课中...");
 
         executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(() -> {
+        executor.scheduleWithFixedDelay(() -> {
             // Simulate course selection attempt
             for (String course : courses) {
                 // Random success simulation (20% chance)
@@ -104,18 +119,19 @@ public class CourseSelectionFragment extends Fragment {
     private void stopCourseSelection() {
         if (executor != null) {
             executor.shutdown();
-            executor = null;
         }
         isRunning = false;
         binding.startButton.setText("开始抢课");
         binding.progressBar.setVisibility(View.GONE);
-        binding.statusText.setText("已停止抢课");
+        binding.statusText.setText("抢课已停止");
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        stopCourseSelection();
+        if (executor != null) {
+            executor.shutdown();
+        }
         binding = null;
     }
 }
