@@ -5,6 +5,7 @@ on:
       - main
     tags:
       - "v*"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,23 +13,40 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
           cache: gradle
+          
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assembleDebug
-      - name: Rename APK
-        run: mv app/build/outputs/apk/debug/app-debug.apk CQUPT_Assistant_$GITHUB_REF_NAME.apk
+        
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --info
+        
+      - name: Check Build Output Directory
+        run: |
+          echo "Checking build output directory..."
+          ls -R app/build/outputs/
+          
+      - name: Find and Rename APK
+        run: |
+          echo "Finding APK file..."
+          APK_FILE=$(find app/build/outputs -name "*.apk" -type f)
+          if [ -z "$APK_FILE" ]; then
+            echo "Error: No APK file found"
+            exit 1
+          fi
+          echo "Found APK: $APK_FILE"
+          cp "$APK_FILE" "./CQUPT_Assistant_$GITHUB_REF_NAME.apk"
+          echo "APK copied to: CQUPT_Assistant_$GITHUB_REF_NAME.apk"
+          
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "*.apk"
+          artifacts: "CQUPT_Assistant_*.apk"
           token: ${{ github.token }}
           generateReleaseNotes: true
