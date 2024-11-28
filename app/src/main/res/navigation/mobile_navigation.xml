@@ -12,12 +12,6 @@
         tools:layout="@layout/fragment_classes" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.CQUPT.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
-    <fragment
         android:id="@+id/nav_slideshow"
         android:name="com.example.CQUPT.ui.slideshow.SlideshowFragment"
         android:label="导出课表"

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 配置导航
             mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
+                    R.id.nav_home, R.id.nav_slideshow,
                     R.id.nav_network, R.id.nav_news, R.id.nav_course_selection, R.id.settingsFragment, R.id.aboutFragment)
                     .setOpenableLayout(drawer)
                     .build();
