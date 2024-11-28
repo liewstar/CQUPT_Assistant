@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.example.CQUPT.R;
 import com.example.CQUPT.databinding.FragmentLoginBinding;
 import com.example.CQUPT.ui.HttpUtil;
+import com.example.CQUPT.utils.KeyboardUtils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -61,6 +62,9 @@ public class LoginFragment extends Fragment {
     }
 
     private void handleLogin() {
+        // 收起键盘
+        KeyboardUtils.hideKeyboard(requireActivity());
+
         String username = binding.usernameInput.getText().toString();
         String password = binding.passwordInput.getText().toString();
 

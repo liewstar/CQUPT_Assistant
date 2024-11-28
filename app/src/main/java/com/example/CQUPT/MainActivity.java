@@ -16,11 +16,14 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
 import com.example.CQUPT.databinding.ActivityMainBinding;
+import com.example.CQUPT.utils.AppUsageInfo;
 import com.example.CQUPT.utils.AppUsageManager;
 import com.example.CQUPT.utils.UsageWarningDialog;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -125,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             int timeThreshold = sharedPreferences.getInt(PREF_TIME_THRESHOLD, 30); // 默认30分钟
+            List<AppUsageInfo> excessiveUsageApps = new ArrayList<>();
 
             for (String packageName : selectedApps) {
                 if (appUsageManager.isExcessiveUsage(packageName, timeThreshold)) {
@@ -132,13 +136,13 @@ public class MainActivity extends AppCompatActivity {
                     String usageTime = appUsageManager.getFormattedUsageTime(
                             appUsageManager.getTodayAppUsageTime(packageName)
                     );
-
-                    if (!isFinishing()) {
-                        UsageWarningDialog dialog = new UsageWarningDialog(this, appName, usageTime);
-                        dialog.show();
-                        break; // 只显示一个提醒
-                    }
+                    excessiveUsageApps.add(new AppUsageInfo(appName, usageTime));
                 }
+            }
+
+            if (!excessiveUsageApps.isEmpty() && !isFinishing()) {
+                UsageWarningDialog dialog = new UsageWarningDialog(this, excessiveUsageApps);
+                dialog.show();
             }
         } catch (Exception e) {
             android.util.Log.e("MainActivity", "Error in checkAppUsageWithPermission", e);

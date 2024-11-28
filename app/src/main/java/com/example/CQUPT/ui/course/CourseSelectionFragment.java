@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.CQUPT.adapter.CourseSuccessAdapter;
 import com.example.CQUPT.databinding.FragmentCourseSelectionBinding;
+import com.example.CQUPT.utils.KeyboardUtils;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.Arrays;
@@ -77,6 +78,9 @@ public class CourseSelectionFragment extends Fragment {
     }
 
     private void startCourseSelection() {
+        // 收起键盘
+        KeyboardUtils.hideKeyboard(requireActivity());
+
         // 从SharedPreferences获取最新的Session
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
         String session = prefs.getString(PREF_SESSION_ID, "");

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.CQUPT.databinding.FragmentLoadClassesBinding;
 import com.example.CQUPT.ui.HttpUtil;
+import com.example.CQUPT.utils.KeyboardUtils;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -43,6 +44,7 @@ public class SlideshowFragment extends Fragment {
     }
 
     private void importCalendar() {
+        KeyboardUtils.hideKeyboard(requireActivity());
         String studentId = binding.studentIdInput.getText().toString();
         if (studentId.isEmpty()) {
             showMessage("请输入学号");
@@ -63,6 +65,7 @@ public class SlideshowFragment extends Fragment {
     }
 
     private void shareCalendar() {
+        KeyboardUtils.hideKeyboard(requireActivity());
         String studentId = binding.studentIdInput.getText().toString();
         if (studentId.isEmpty()) {
             showMessage("请输入学号");
