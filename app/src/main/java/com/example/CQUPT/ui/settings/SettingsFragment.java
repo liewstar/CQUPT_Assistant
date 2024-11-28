@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,9 +22,11 @@ public class SettingsFragment extends Fragment {
 
     private TextView startPageValue;
     private TextView sessionValue;
+    private Switch appNotificationSwitch;
     private SharedPreferences sharedPreferences;
     private static final String PREF_START_PAGE = "start_page";
     private static final String PREF_SESSION_ID = "session_id";
+    private static final String PREF_APP_NOTIFICATION_ENABLED = "app_notification_enabled";
 
     @Nullable
     @Override
@@ -35,16 +38,24 @@ public class SettingsFragment extends Fragment {
         // 初始化视图
         startPageValue = view.findViewById(R.id.start_page_value);
         sessionValue = view.findViewById(R.id.session_value);
+        appNotificationSwitch = view.findViewById(R.id.app_notification_switch);
         View startPageContainer = view.findViewById(R.id.start_page_container);
         View sessionContainer = view.findViewById(R.id.session_container);
+        View appNotificationContainer = view.findViewById(R.id.app_notification_container);
 
         // 设置当前值
         updateStartPageValue();
         updateSessionValue();
+        boolean notificationEnabled = sharedPreferences.getBoolean(PREF_APP_NOTIFICATION_ENABLED, false);
+        appNotificationSwitch.setChecked(notificationEnabled);
 
         // 设置点击事件
         startPageContainer.setOnClickListener(v -> showStartPageDialog());
         sessionContainer.setOnClickListener(v -> startLoginWebView());
+        appNotificationContainer.setOnClickListener(v -> startAppNotificationSettings());
+        appNotificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean(PREF_APP_NOTIFICATION_ENABLED, isChecked).apply();
+        });
 
         return view;
     }
@@ -65,6 +76,11 @@ public class SettingsFragment extends Fragment {
 
     private void startLoginWebView() {
         Intent intent = new Intent(requireContext(), LoginWebViewActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAppNotificationSettings() {
+        Intent intent = new Intent(requireContext(), AppNotificationSettingsActivity.class);
         startActivity(intent);
     }
 

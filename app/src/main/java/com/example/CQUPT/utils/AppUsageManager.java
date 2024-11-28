@@ -7,6 +7,10 @@ import android.app.usage.UsageStatsManager;
 import android.content.Intent;
 import android.provider.Settings;
 import android.util.Log;
+import android.app.Activity;
+import android.net.Uri;
+import androidx.appcompat.app.AlertDialog;
+import android.content.DialogInterface;
 
 import java.util.Calendar;
 import java.util.List;
@@ -16,6 +20,7 @@ public class AppUsageManager {
     private static final String TAG = "AppUsageManager";
     private final Context context;
     private final UsageStatsManager usageStatsManager;
+    private AlertDialog currentDialog;
 
     public AppUsageManager(Context context) {
         this.context = context;
@@ -29,9 +34,37 @@ public class AppUsageManager {
     }
 
     public void requestUsagePermission() {
-        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        // 如果已经有对话框在显示，就不要再显示新的
+        if (currentDialog != null && currentDialog.isShowing()) {
+            return;
+        }
+
+        currentDialog = new AlertDialog.Builder(context)
+            .setTitle("需要权限")
+            .setMessage("为了统计应用使用时间，需要授予“使用情况访问权限”。\n\n请在接下来的设置页面中找到“邮兵工具箱”，并开启其使用情况访问权限。")
+            .setPositiveButton("去设置", (dialog, which) -> {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                    intent.setData(uri);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    // 如果无法直接跳转到应用的权限设置页面，就跳转到通用的使用情况访问页面
+                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
+            })
+            .setNegativeButton("取消", null)
+            .setOnDismissListener(dialog -> {
+                if (currentDialog == dialog) {
+                    currentDialog = null;
+                }
+            })
+            .create();
+
+        currentDialog.show();
     }
 
     public long getAppUsageTime(String packageName, long startTime, long endTime) {

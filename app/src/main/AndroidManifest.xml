@@ -5,7 +5,20 @@
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
+    <!-- 添加 package visibility needs -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+    </queries>
 
     <application
         android:usesCleartextTraffic="true"
@@ -44,6 +57,11 @@
             android:exported="false"
             android:label="登录教务系统"
             android:theme="@style/Theme.CQUPT_Assistant.NoActionBar" />
+
+        <activity
+            android:name=".ui.settings.AppNotificationSettingsActivity"
+            android:label="高频应用设置"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
     </application>
 
 </manifest>
