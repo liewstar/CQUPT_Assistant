@@ -11,19 +11,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="点击查看本周新闻总结"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
         android:layout_marginHorizontal="16dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/news_recycler_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/btn_weekly_summary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp"
-        android:clipToPadding="false"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_weekly_summary">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/news_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="8dp" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

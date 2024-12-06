@@ -1,20 +1,18 @@
 package com.example.CQUPT.ui.login;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.CQUPT.R;
 import com.example.CQUPT.databinding.FragmentLoginBinding;
-import com.example.CQUPT.ui.HttpUtil;
+import com.example.CQUPT.utils.HttpUtil;
 import com.example.CQUPT.utils.KeyboardUtils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.snackbar.Snackbar;

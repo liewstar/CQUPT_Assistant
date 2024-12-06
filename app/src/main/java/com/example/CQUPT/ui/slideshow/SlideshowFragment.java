@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.CQUPT.databinding.FragmentLoadClassesBinding;
-import com.example.CQUPT.ui.HttpUtil;
+import com.example.CQUPT.utils.HttpUtil;
 import com.example.CQUPT.utils.KeyboardUtils;
 import com.google.android.material.snackbar.Snackbar;
 
