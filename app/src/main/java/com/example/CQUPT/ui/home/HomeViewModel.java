@@ -1,27 +1,50 @@
 package com.example.CQUPT.ui.home;
 
+import android.app.Application;
+import android.content.SharedPreferences;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
+import com.example.CQUPT.api.RetrofitClient;
+import com.example.CQUPT.api.TimetableResponse;
+import com.example.CQUPT.api.CourseSchedule;
 import com.example.CQUPT.model.Course;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class HomeViewModel extends ViewModel {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+public class HomeViewModel extends AndroidViewModel {
+    private static final String PREF_STUDENT_ID = "student_id";
     private final MutableLiveData<List<Course>> mCourses;
     private final MutableLiveData<String> mCurrentDate;
+    private final MutableLiveData<Boolean> isLoading;
+    private final MutableLiveData<String> errorMessage;
+    private final SimpleDateFormat apiDateFormat;
+    private final SimpleDateFormat apiTimeFormat;
+    private final SharedPreferences sharedPreferences;
 
-    public HomeViewModel() {
+    public HomeViewModel(Application application) {
+        super(application);
         mCourses = new MutableLiveData<>();
         mCurrentDate = new MutableLiveData<>();
-        loadCoursesForDate(new Date()); // 加载当天课程
-        // 设置当前日期
-        mCurrentDate.setValue("2024年1月1日 星期一");
+        isLoading = new MutableLiveData<>(false);
+        errorMessage = new MutableLiveData<>();
+        apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        apiTimeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
+        
+        loadCoursesForDate(new Date());
     }
 
     public LiveData<List<Course>> getCourses() {
@@ -32,47 +55,90 @@ public class HomeViewModel extends ViewModel {
         return mCurrentDate;
     }
 
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
+    }
+
     public void setCurrentDate(String date) {
         mCurrentDate.setValue(date);
     }
 
     public void loadCoursesForDate(Date date) {
-        // TODO: 在实际应用中，这里应该从数据库或网络加载指定日期的课程数据
-        // 现在使用模拟数据进行演示
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        
-        List<Course> courses = new ArrayList<>();
-        
-        // 根据星期几返回不同的课程安排
-        switch (dayOfWeek) {
-            case Calendar.MONDAY:
-                courses.add(new Course("高等数学", "08:00", "09:40", "教学楼2-301", "张三", 1, 16));
-                courses.add(new Course("大学英语", "10:00", "11:40", "教学楼3-201", "李四", 1, 12));
-                break;
-            case Calendar.TUESDAY:
-                courses.add(new Course("Java程序设计", "14:00", "15:40", "实验楼1-501", "王五", 2, 17));
-                courses.add(new Course("数据结构", "16:00", "17:40", "教学楼4-401", "赵六", 3, 15));
-                break;
-            case Calendar.WEDNESDAY:
-                courses.add(new Course("计算机网络", "08:00", "09:40", "教学楼1-301", "孙七", 1, 14));
-                courses.add(new Course("操作系统", "10:00", "11:40", "实验楼2-401", "周八", 4, 16));
-                break;
-            case Calendar.THURSDAY:
-                courses.add(new Course("软件工程", "14:00", "15:40", "教学楼5-201", "吴九", 2, 15));
-                courses.add(new Course("数据库系统", "16:00", "17:40", "实验楼3-301", "郑十", 1, 13));
-                break;
-            case Calendar.FRIDAY:
-                courses.add(new Course("计算机组成原理", "08:00", "09:40", "教学楼6-401", "刘一", 3, 18));
-                courses.add(new Course("编译原理", "10:00", "11:40", "教学楼2-501", "陈二", 5, 16));
-                break;
-            // 周末没有课程
-            case Calendar.SATURDAY:
-            case Calendar.SUNDAY:
-                break;
+        String studentId = sharedPreferences.getString(PREF_STUDENT_ID, null);
+        if (studentId == null || studentId.equals("未设置")) {
+            errorMessage.setValue("请先在设置中配置学号");
+            return;
         }
-        
-        mCourses.setValue(courses);
+
+        isLoading.setValue(true);
+        RetrofitClient.getInstance()
+                .getTimetableService()
+                .getTimetable(studentId)
+                .enqueue(new Callback<TimetableResponse>() {
+                    @Override
+                    public void onResponse(Call<TimetableResponse> call, Response<TimetableResponse> response) {
+                        isLoading.setValue(false);
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccessful()) {
+                            List<CourseSchedule> schedules = response.body().getCourseSchedules();
+                            if (schedules != null) {
+                                List<Course> coursesForDate = filterCoursesForDate(schedules, date);
+                                mCourses.setValue(coursesForDate);
+                                if (coursesForDate.isEmpty()) {
+                                    errorMessage.setValue("今天没有课程");
+                                } else {
+                                    errorMessage.setValue(null);
+                                }
+                            }
+                        } else {
+                            String error = response.body() != null ? response.body().getMessage() : "获取课程数据失败";
+                            errorMessage.setValue(error);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<TimetableResponse> call, Throwable t) {
+                        isLoading.setValue(false);
+                        errorMessage.setValue("网络请求失败: " + t.getMessage());
+                    }
+                });
+    }
+
+    private List<Course> filterCoursesForDate(List<CourseSchedule> schedules, Date targetDate) {
+        List<Course> courses = new ArrayList<>();
+        String targetDateStr = apiDateFormat.format(targetDate);
+
+        for (CourseSchedule schedule : schedules) {
+            try {
+                if (schedule.getDate().equals(targetDateStr)) {
+                    // 转换时间格式
+                    String startTime = schedule.getStartTime().substring(0, 5); // 取"HH:mm"部分
+                    String endTime = schedule.getEndTime().substring(0, 5);     // 取"HH:mm"部分
+
+                    // 获取周数范围
+                    List<Integer> weekNums = schedule.getWeekNums();
+                    int startWeek = weekNums.isEmpty() ? 1 : weekNums.get(0);
+                    int endWeek = weekNums.isEmpty() ? 1 : weekNums.get(weekNums.size() - 1);
+
+                    Course course = new Course(
+                            schedule.getTitle(),
+                            startTime,
+                            endTime,
+                            schedule.getLocation(),
+                            schedule.getData().getTeacherName(),
+                            startWeek,
+                            endWeek
+                    );
+                    courses.add(course);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return courses;
     }
 }

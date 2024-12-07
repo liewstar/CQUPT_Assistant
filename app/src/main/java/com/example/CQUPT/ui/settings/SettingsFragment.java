@@ -3,9 +3,11 @@ package com.example.CQUPT.ui.settings;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Switch;
 
@@ -22,10 +24,12 @@ public class SettingsFragment extends Fragment {
 
     private TextView startPageValue;
     private TextView sessionValue;
+    private TextView studentIdValue;
     private Switch appNotificationSwitch;
     private SharedPreferences sharedPreferences;
     private static final String PREF_START_PAGE = "start_page";
     private static final String PREF_SESSION_ID = "session_id";
+    private static final String PREF_STUDENT_ID = "student_id";
     private static final String PREF_APP_NOTIFICATION_ENABLED = "app_notification_enabled";
 
     @Nullable
@@ -38,20 +42,24 @@ public class SettingsFragment extends Fragment {
         // 初始化视图
         startPageValue = view.findViewById(R.id.start_page_value);
         sessionValue = view.findViewById(R.id.session_value);
+        studentIdValue = view.findViewById(R.id.student_id_value);
         appNotificationSwitch = view.findViewById(R.id.app_notification_switch);
         View startPageContainer = view.findViewById(R.id.start_page_container);
         View sessionContainer = view.findViewById(R.id.session_container);
+        View studentIdContainer = view.findViewById(R.id.student_id_container);
         View appNotificationContainer = view.findViewById(R.id.app_notification_container);
 
         // 设置当前值
         updateStartPageValue();
         updateSessionValue();
+        updateStudentIdValue();
         boolean notificationEnabled = sharedPreferences.getBoolean(PREF_APP_NOTIFICATION_ENABLED, false);
         appNotificationSwitch.setChecked(notificationEnabled);
 
         // 设置点击事件
         startPageContainer.setOnClickListener(v -> showStartPageDialog());
         sessionContainer.setOnClickListener(v -> startLoginWebView());
+        studentIdContainer.setOnClickListener(v -> showStudentIdDialog());
         appNotificationContainer.setOnClickListener(v -> startAppNotificationSettings());
         appNotificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             sharedPreferences.edit().putBoolean(PREF_APP_NOTIFICATION_ENABLED, isChecked).apply();
@@ -72,6 +80,34 @@ public class SettingsFragment extends Fragment {
             sessionId = sessionId.substring(0, 6) + "***";
         }
         sessionValue.setText(sessionId);
+    }
+
+    private void updateStudentIdValue() {
+        String studentId = sharedPreferences.getString(PREF_STUDENT_ID, "未设置");
+        studentIdValue.setText(studentId);
+    }
+
+    private void showStudentIdDialog() {
+        EditText input = new EditText(requireContext());
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setHint("请输入学号");
+        String currentStudentId = sharedPreferences.getString(PREF_STUDENT_ID, "");
+        if (!"未设置".equals(currentStudentId)) {
+            input.setText(currentStudentId);
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("设置学号")
+                .setView(input)
+                .setPositiveButton("确定", (dialog, which) -> {
+                    String studentId = input.getText().toString().trim();
+                    if (!studentId.isEmpty()) {
+                        sharedPreferences.edit().putString(PREF_STUDENT_ID, studentId).apply();
+                        updateStudentIdValue();
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     private void startLoginWebView() {

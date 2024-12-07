@@ -1,6 +1,7 @@
 package com.example.CQUPT.ui.home;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.CQUPT.adapter.CourseAdapter;
 import com.example.CQUPT.databinding.FragmentClassesBinding;
+import com.example.CQUPT.ui.settings.SettingsFragment;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ public class HomeFragment extends Fragment {
     private Calendar currentDate;
     private SimpleDateFormat dateFormat;
     private SimpleDateFormat weekDayFormat;
-    private Calendar semesterStartDate; // 添加学期开始日期
+    private Calendar semesterStartDate;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class HomeFragment extends Fragment {
         initializeFormats();
         setupRecyclerView();
         setupDateNavigation();
+        setupRetryButton();
         observeViewModel();
         updateDateDisplay();
 
@@ -79,6 +83,12 @@ public class HomeFragment extends Fragment {
         prevButton.setOnClickListener(v -> navigateDay(-1));
         nextButton.setOnClickListener(v -> navigateDay(1));
         dateButton.setOnClickListener(v -> showDatePicker());
+    }
+
+    private void setupRetryButton() {
+        binding.retryButton.setOnClickListener(v -> {
+            loadCoursesForDate(currentDate.getTime());
+        });
     }
 
     private void navigateDay(int offset) {
@@ -119,9 +129,55 @@ public class HomeFragment extends Fragment {
     }
 
     private void observeViewModel() {
+        // 观察课程数据
         homeViewModel.getCourses().observe(getViewLifecycleOwner(), courses -> {
             courseAdapter.setCourses(courses);
+            updateViewVisibility(courses.isEmpty());
         });
+
+        // 观察加载状态
+        homeViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            binding.loadingProgress.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            binding.recyclerCourses.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+            binding.errorCard.setVisibility(View.GONE);
+        });
+
+        // 观察错误信息
+        homeViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
+            if (errorMessage != null) {
+                if (errorMessage.equals("请先在设置中配置学号")) {
+                    showStudentIdError();
+                } else {
+                    showError(errorMessage);
+                }
+            } else {
+                binding.errorCard.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void updateViewVisibility(boolean isEmpty) {
+        binding.emptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        binding.recyclerCourses.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+    }
+
+    private void showError(String message) {
+        binding.errorCard.setVisibility(View.VISIBLE);
+        binding.errorText.setText(message);
+        binding.recyclerCourses.setVisibility(View.GONE);
+        binding.emptyView.setVisibility(View.GONE);
+    }
+
+    private void showStudentIdError() {
+        binding.errorCard.setVisibility(View.VISIBLE);
+        binding.errorText.setText("请先设置学号才能查看课表");
+        binding.retryButton.setText("去设置");
+        binding.retryButton.setOnClickListener(v -> {
+            // 跳转到设置页面
+            startActivity(new Intent(requireContext(), SettingsFragment.class));
+        });
+        binding.recyclerCourses.setVisibility(View.GONE);
+        binding.emptyView.setVisibility(View.GONE);
     }
 
     @Override

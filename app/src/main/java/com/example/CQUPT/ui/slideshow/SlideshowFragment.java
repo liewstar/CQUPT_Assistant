@@ -44,6 +44,7 @@ public class SlideshowFragment extends Fragment {
     }
 
     private void importCalendar() {
+        //隐藏收起键盘
         KeyboardUtils.hideKeyboard(requireActivity());
         String studentId = binding.studentIdInput.getText().toString();
         if (studentId.isEmpty()) {

@@ -80,7 +80,6 @@ public class NewsFragment extends Fragment {
         newsRecyclerView.setAdapter(newsAdapter);
 
         newsAdapter.setOnItemClickListener(newsItem -> {
-            // TODO: 实现新闻详情页面跳转
             Bundle args = new Bundle();
             args.putString("id", newsItem.getId());
             args.putString("title", newsItem.getTitle());
@@ -152,7 +151,7 @@ public class NewsFragment extends Fragment {
     }
 
     private String getWeeklySummary() {
-        // 这里应该是调用后端API获取周摘要的逻辑
+        // 这里是调用后端API获取周摘要的逻辑
         // 为了演示，这里返回一个模拟的摘要
         return "这是本周新闻的AI摘要。包含了重要事件1、重要事件2、重要事件3等内容...";
     }
