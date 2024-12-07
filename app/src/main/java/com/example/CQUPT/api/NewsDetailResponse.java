@@ -1,5 +1,8 @@
 package com.example.CQUPT.api;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class NewsDetailResponse {
     private int code;
     private String msg;
@@ -17,11 +20,14 @@ public class NewsDetailResponse {
 
     public static class NewsContent {
         private String title;
+        @SerializedName("pub_time")
         private String pub_time;
         private String publisher;
         private String issuer;
         private String content;
-        private String[] attachments;
+        @Expose(deserialize = false)
+        private transient Object attachments; 
+        @SerializedName("data")
         private ScheduleData data;
 
         public String getTitle() { return title; }
@@ -29,12 +35,13 @@ public class NewsDetailResponse {
         public String getPublisher() { return publisher; }
         public String getIssuer() { return issuer; }
         public String getContent() { return content; }
-        public String[] getAttachments() { return attachments; }
         public ScheduleData getScheduleData() { return data; }
     }
 
     public static class ScheduleData {
+        @SerializedName("schedule_time")
         private String schedule_time;
+        @SerializedName("schedule_location")
         private String schedule_location;
 
         public String getScheduleTime() { return schedule_time; }
