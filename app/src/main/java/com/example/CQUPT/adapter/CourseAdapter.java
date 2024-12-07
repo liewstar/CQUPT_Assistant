@@ -21,20 +21,13 @@ import java.util.List;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
     private List<Course> courses;
-    private int currentWeek;
 
-    public CourseAdapter(List<Course> courses, int currentWeek) {
+    public CourseAdapter(List<Course> courses) {
         this.courses = courses;
-        this.currentWeek = currentWeek;
     }
 
     public void setCourses(List<Course> courses) {
         this.courses = courses;
-        notifyDataSetChanged();
-    }
-
-    public void setCurrentWeek(int currentWeek) {
-        this.currentWeek = currentWeek;
         notifyDataSetChanged();
     }
 
@@ -48,7 +41,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         Course course = courses.get(position);
-        holder.bind(course, currentWeek);
+        holder.bind(course);
     }
 
     @Override
@@ -76,20 +69,21 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
             currentWeekText = itemView.findViewById(R.id.currentWeekText);
         }
 
-        public void bind(Course course, int currentWeek) {
+        public void bind(Course course) {
             Context context = itemView.getContext();
-            
+
             // 设置基本信息
             courseTimeText.setText(course.getTimeRange());
             courseNameText.setText(course.getName());
             locationText.setText(course.getLocation());
             teacherText.setText(course.getTeacher());
             weekRangeText.setText(course.getWeekRange());
-            currentWeekText.setText(String.format("第%d周", currentWeek));
+            currentWeekText.setText(String.format("第%d周", course.getCurrentWeek()));
 
             // 判断课程是否在当前周
-            boolean isInCurrentWeek = currentWeek >= course.getStartWeek() && currentWeek <= course.getEndWeek();
-            
+            boolean isInCurrentWeek = course.getCurrentWeek() >= course.getStartWeek() 
+                && course.getCurrentWeek() <= course.getEndWeek();
+
             // 根据是否在当前周设置卡片样式
             if (isInCurrentWeek) {
                 cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.purple_50));
@@ -100,33 +94,25 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 cardView.setCardBackgroundColor(Color.WHITE);
                 cardView.setStrokeColor(Color.TRANSPARENT);
                 cardView.setStrokeWidth(0);
-                courseNameText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+                courseNameText.setTextColor(Color.BLACK);
             }
 
-            // 设置点击事件显示详情
-            cardView.setOnClickListener(v -> showCourseDetail(context, course, currentWeek));
+            // 设置点击事件显示课程详情
+            cardView.setOnClickListener(v -> showCourseDetailDialog(context, course));
         }
 
-        private void showCourseDetail(Context context, Course course, int currentWeek) {
-            View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_course_detail, null);
-
-            // 设置详情对话框的内容
-            TextView courseNameTitle = dialogView.findViewById(R.id.courseNameTitle);
-            TextView timeText = dialogView.findViewById(R.id.timeText);
-            TextView weekRangeDetailText = dialogView.findViewById(R.id.weekRangeDetailText);
-            TextView locationDetailText = dialogView.findViewById(R.id.locationDetailText);
-            TextView teacherDetailText = dialogView.findViewById(R.id.teacherDetailText);
-
-            courseNameTitle.setText(course.getName());
-            timeText.setText(course.getTimeRange());
-            weekRangeDetailText.setText(String.format("%s（当前第%d周）", course.getWeekRange(), currentWeek));
-            locationDetailText.setText(course.getLocation());
-            teacherDetailText.setText(course.getTeacher());
-
-            // 创建并显示对话框
+        private void showCourseDetailDialog(Context context, Course course) {
             new MaterialAlertDialogBuilder(context)
-                    .setView(dialogView)
-                    .setPositiveButton("关闭", null)
+                    .setTitle(course.getName())
+                    .setMessage(String.format(
+                            "时间: %s\n位置: %s\n教师: %s\n周数: %s\n当前周: 第%d周",
+                            course.getTimeRange(),
+                            course.getLocation(),
+                            course.getTeacher(),
+                            course.getWeekRange(),
+                            course.getCurrentWeek()
+                    ))
+                    .setPositiveButton("确定", null)
                     .show();
         }
     }

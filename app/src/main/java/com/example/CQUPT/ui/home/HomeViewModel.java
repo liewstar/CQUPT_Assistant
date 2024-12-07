@@ -43,7 +43,7 @@ public class HomeViewModel extends AndroidViewModel {
         apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         apiTimeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
-        
+
         loadCoursesForDate(new Date());
     }
 
@@ -123,6 +123,10 @@ public class HomeViewModel extends AndroidViewModel {
                     int startWeek = weekNums.isEmpty() ? 1 : weekNums.get(0);
                     int endWeek = weekNums.isEmpty() ? 1 : weekNums.get(weekNums.size() - 1);
 
+                    // 获取当前周
+                    int currentWeek = schedule.getWeekNum();
+
+                    // 创建课程对象
                     Course course = new Course(
                             schedule.getTitle(),
                             startTime,
@@ -130,7 +134,8 @@ public class HomeViewModel extends AndroidViewModel {
                             schedule.getLocation(),
                             schedule.getData().getTeacherName(),
                             startWeek,
-                            endWeek
+                            endWeek,
+                            currentWeek
                     );
                     courses.add(course);
                 }

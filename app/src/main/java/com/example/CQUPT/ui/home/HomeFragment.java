@@ -62,16 +62,10 @@ public class HomeFragment extends Fragment {
         semesterStartDate.set(2024, Calendar.FEBRUARY, 26);
     }
 
-    private int getCurrentWeek() {
-        long diff = currentDate.getTimeInMillis() - semesterStartDate.getTimeInMillis();
-        int daysDiff = (int) (diff / (24 * 60 * 60 * 1000));
-        return (daysDiff / 7) + 1;
-    }
-
     private void setupRecyclerView() {
         RecyclerView recyclerView = binding.recyclerCourses;
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        courseAdapter = new CourseAdapter(new ArrayList<>(), getCurrentWeek());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        courseAdapter = new CourseAdapter(new ArrayList<>());
         recyclerView.setAdapter(courseAdapter);
     }
 
@@ -115,13 +109,7 @@ public class HomeFragment extends Fragment {
     private void updateDateDisplay() {
         String dateStr = dateFormat.format(currentDate.getTime());
         String weekDayStr = weekDayFormat.format(currentDate.getTime());
-        int currentWeek = getCurrentWeek();
-        binding.buttonDate.setText(String.format("%s %s (第%d周)", dateStr, weekDayStr, currentWeek));
-        
-        // 更新适配器中的当前周
-        if (courseAdapter != null) {
-            courseAdapter.setCurrentWeek(currentWeek);
-        }
+        binding.buttonDate.setText(String.format("%s %s", dateStr, weekDayStr));
     }
 
     private void loadCoursesForDate(Date date) {
