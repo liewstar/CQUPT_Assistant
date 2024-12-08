@@ -161,8 +161,8 @@ public class HomeFragment extends Fragment {
         binding.errorText.setText("请先设置学号才能查看课表");
         binding.retryButton.setText("去设置");
         binding.retryButton.setOnClickListener(v -> {
-            // 跳转到设置页面
-            startActivity(new Intent(requireContext(), SettingsFragment.class));
+            // TODO 待办导航
+            //startActivity(new Intent(requireContext(), SettingsFragment.class));
         });
         binding.recyclerCourses.setVisibility(View.GONE);
         binding.emptyView.setVisibility(View.GONE);

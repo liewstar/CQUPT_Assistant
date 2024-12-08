@@ -6,10 +6,10 @@
     android:background="@drawable/nav_header_background"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingLeft="16dp"
+    android:paddingTop="35dp"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingBottom="2dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="4dp"
-        android:text="Talk is cheap, show me your code."
+        android:text="Talk is cheap, show me the code."
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         android:textColor="@android:color/white" />
 
