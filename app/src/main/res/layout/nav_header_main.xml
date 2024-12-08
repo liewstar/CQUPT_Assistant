@@ -19,7 +19,7 @@
         android:padding="4dp"
         android:background="@android:color/white"
         app:shapeAppearanceOverlay="@style/CircleImageView"
-        android:src="@drawable/emoji_happy"
+        android:src="@drawable/logo"
         android:contentDescription="@string/nav_header_desc" />
 
     <TextView
@@ -27,17 +27,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/nav_header_vertical_spacing"
-        android:text="姓名"
+        android:text="邮兵工具箱"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         android:textColor="@android:color/white"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/header_everyday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginTop="4dp"
-        android:text="每日一句励志"
+        android:text="Talk is cheap, show me your code."
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         android:textColor="@android:color/white" />
 

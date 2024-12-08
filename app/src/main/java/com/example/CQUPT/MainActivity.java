@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             NavigationView navigationView = binding.navView;
             View headerView = navigationView.getHeaderView(0);
             TextView everyDay = headerView.findViewById(R.id.header_everyday);
-            everyDay.setText("这是每日一言");
+            //everyDay.setText("这是每日一言");
 
             // 配置导航
             mAppBarConfiguration = new AppBarConfiguration.Builder(

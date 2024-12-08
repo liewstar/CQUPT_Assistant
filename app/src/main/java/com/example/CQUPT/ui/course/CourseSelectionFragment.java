@@ -107,15 +107,11 @@ public class CourseSelectionFragment extends Fragment {
 
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(() -> {
-            // Simulate course selection attempt
             for (String course : courses) {
-                // Random success simulation (20% chance)
-                if (new Random().nextInt(100) < 20) {
-                    mainHandler.post(() -> {
-                        adapter.addSuccessCourse(course.trim());
-                        binding.statusText.setText("成功抢到: " + course.trim());
-                    });
-                }
+                mainHandler.post(() -> {
+                    adapter.addSuccessCourse(course.trim());
+                    binding.statusText.setText("成功抢到: " + course.trim());
+                });
             }
         }, 0, delay * 10L, TimeUnit.MILLISECONDS);
     }

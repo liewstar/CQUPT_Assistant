@@ -159,7 +159,7 @@
         android:id="@+id/profile_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/baseline_account_circle_24"
+        android:src="@drawable/logo"
         app:civ_border_width="2dp"
         app:civ_border_color="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@id/login_card"
