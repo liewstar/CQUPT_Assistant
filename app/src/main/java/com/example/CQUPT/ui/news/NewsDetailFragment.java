@@ -65,7 +65,7 @@ public class NewsDetailFragment extends Fragment {
 
     private void setupRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000/")
+                .baseUrl("http://8.137.36.93:7999/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(NewsApiService.class);
@@ -75,6 +75,48 @@ public class NewsDetailFragment extends Fragment {
         if (getArguments() == null) return;
         
         String newsId = getArguments().getString("id");
+        String aiSummaryContent = getArguments().getString("content");
+
+        // 如果是AI摘要，直接显示
+        if (aiSummaryContent != null && !aiSummaryContent.isEmpty()) {
+            titleTextView.setText("本周新闻摘要");
+            timeTextView.setText(getArguments().getString("date", ""));
+            publisherTextView.setText("AI生成");
+
+            String markdownContent = aiSummaryContent;
+            String htmlContent = String.format(
+                    "<html>" +
+                            "<head>" +
+                            "<meta name='viewport' content='width=device-width, initial-scale=1'>" +
+                            "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown.min.css'>" +
+                            "<script src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script>" +
+                            "<style>" +
+                            "body { padding: 16px; }" +
+                            ".markdown-body { box-sizing: border-box; min-width: 200px; max-width: 100%%; margin: 0 auto; padding: 15px; }" +
+                            "</style>" +
+                            "</head>" +
+                            "<body class='markdown-body'>" +
+                            "<div id='content'></div>" +
+                            "<script>" +
+                            "document.getElementById('content').innerHTML = marked.parse(`%s`);" +
+                            "</script>" +
+                            "</body>" +
+                            "</html>",
+                    markdownContent.replace("`", "\\`").replace("$", "\\$")
+            );
+
+            contentWebView.loadDataWithBaseURL(
+                    "https://example.com",
+                    htmlContent,
+                    "text/html",
+                    "UTF-8",
+                    null
+            );
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
+
+        // 如果不是AI摘要，走原来的逻辑
         if (newsId == null) return;
 
         progressBar.setVisibility(View.VISIBLE);

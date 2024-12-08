@@ -15,4 +15,7 @@ public interface NewsApiService {
 
     @GET("api/news/{id}")
     Call<NewsDetailResponse> getNewsDetail(@Path("id") String id);
+
+    @GET("api/news/ai/weekly_summary")
+    Call<AiSummaryResponse> getWeeklySummary();
 }

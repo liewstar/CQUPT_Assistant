@@ -85,17 +85,22 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 && course.getCurrentWeek() <= course.getEndWeek();
 
             // 根据是否在当前周设置卡片样式
-            if (isInCurrentWeek) {
-                cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.purple_50));
-                cardView.setStrokeColor(ContextCompat.getColor(context, R.color.purple_200));
-                cardView.setStrokeWidth(2);
-                courseNameText.setTextColor(ContextCompat.getColor(context, R.color.purple_700));
-            } else {
-                cardView.setCardBackgroundColor(Color.WHITE);
-                cardView.setStrokeColor(Color.TRANSPARENT);
-                cardView.setStrokeWidth(0);
-                courseNameText.setTextColor(Color.BLACK);
-            }
+//            if (isInCurrentWeek) {
+//                cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.purple_50));
+//                cardView.setStrokeColor(ContextCompat.getColor(context, R.color.purple_200));
+//                cardView.setStrokeWidth(2);
+//                courseNameText.setTextColor(ContextCompat.getColor(context, R.color.purple_700));
+//            } else {
+//                cardView.setCardBackgroundColor(Color.WHITE);
+//                cardView.setStrokeColor(Color.TRANSPARENT);
+//                cardView.setStrokeWidth(0);
+//                courseNameText.setTextColor(Color.BLACK);
+//            }
+
+            cardView.setCardBackgroundColor(Color.WHITE);
+            cardView.setStrokeColor(Color.TRANSPARENT);
+            cardView.setStrokeWidth(0);
+            courseNameText.setTextColor(Color.BLACK);
 
             // 设置点击事件显示课程详情
             cardView.setOnClickListener(v -> showCourseDetailDialog(context, course));

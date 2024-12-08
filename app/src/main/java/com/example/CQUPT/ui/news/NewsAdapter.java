@@ -47,7 +47,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         holder.readNumsTextView.setText(String.format("阅读量: %d", newsItem.getReadNums()));
         
         // 设置已读/未读状态
-        holder.itemView.setAlpha(newsItem.isRead() ? 0.7f : 1.0f);
+//        holder.itemView.setAlpha(newsItem.isRead() ? 0.7f : 1.0f);
         
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

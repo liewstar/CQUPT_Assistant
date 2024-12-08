@@ -16,15 +16,17 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.CQUPT.R;
 import com.example.CQUPT.api.NewsApiService;
 import com.example.CQUPT.api.NewsResponse;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.CQUPT.api.AiSummaryResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NewsFragment extends Fragment {
 
@@ -46,22 +48,14 @@ public class NewsFragment extends Fragment {
         loadNews(true);
 
         // 添加周摘要按钮点击事件
-        root.findViewById(R.id.btn_weekly_summary).setOnClickListener(v -> {
-            // 这里应该调用后端API获取周摘要
-            String weeklySummary = getWeeklySummary();
-            Bundle args = new Bundle();
-            args.putString("title", "本周新闻摘要");
-            args.putString("date", ""); // 可以根据需要设置日期
-            args.putString("content", weeklySummary);
-            Navigation.findNavController(root).navigate(R.id.action_newsFragment_to_newsDetailFragment, args);
-        });
+        root.findViewById(R.id.btn_weekly_summary).setOnClickListener(v -> getWeeklySummary());
 
         return root;
     }
 
     private void setupRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000/")  // 10.0.2.2 是Android模拟器访问本机的特殊IP
+                .baseUrl("http://8.137.36.93:7999/")  // 10.0.2.2 是Android模拟器访问本机的特殊IP
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(NewsApiService.class);
@@ -150,9 +144,28 @@ public class NewsFragment extends Fragment {
         }
     }
 
-    private String getWeeklySummary() {
-        // 这里是调用后端API获取周摘要的逻辑
-        // 为了演示，这里返回一个模拟的摘要
-        return "这是本周新闻的AI摘要。包含了重要事件1、重要事件2、重要事件3等内容...";
+    private void getWeeklySummary() {
+        // 调用后端API获取周摘要
+        apiService.getWeeklySummary().enqueue(new Callback<AiSummaryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<AiSummaryResponse> call, @NonNull Response<AiSummaryResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getCode() == 0) {
+                    String weeklySummary = response.body().getData().getSummary();
+                    Bundle args = new Bundle();
+                    args.putString("title", "本周新闻摘要");
+                    args.putString("date", response.body().getData().getLastUpdated());
+                    args.putString("content", weeklySummary);
+                    Navigation.findNavController(requireView())
+                            .navigate(R.id.action_newsFragment_to_newsDetailFragment, args);
+                } else {
+                    showError("获取周摘要失败: " + (response.body() != null ? response.body().getMsg() : "未知错误"));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AiSummaryResponse> call, @NonNull Throwable t) {
+                showError("网络请求失败: " + t.getMessage());
+            }
+        });
     }
 }
